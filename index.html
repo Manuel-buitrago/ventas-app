@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ventas CBBA">
+<meta name="theme-color" content="#ffffff">
+<title>Mi Panel de Ventas</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f5f4f0;--surface:#fff;--surface2:#f0ede8;--text:#1a1917;--text2:#6b6860;--text3:#9e9b94;--border:rgba(26,25,23,.1);--border2:rgba(26,25,23,.2);--radius:14px;--radius-sm:9px;--red:#dc2626;--amber:#d97706;--green:#16a34a;--blue:#2563eb}
+@media(prefers-color-scheme:dark){:root{--bg:#141412;--surface:#1e1d1b;--surface2:#28271f;--text:#f0ede8;--text2:#a09d96;--text3:#6b6860;--border:rgba(240,237,232,.1);--border2:rgba(240,237,232,.2)}}
+html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);-webkit-font-smoothing:antialiased}
+#app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg)}
+#login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem}
+.login-eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:2.5rem}
+.login-heading{font-size:26px;font-weight:600;text-align:center;margin-bottom:6px}
+.login-sub{font-size:14px;color:var(--text2);text-align:center;margin-bottom:2.5rem}
+.login-card{background:var(--surface);border:.5px solid var(--border2);border-radius:var(--radius);padding:1.5rem;width:100%;max-width:340px}
+.fl{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:6px;display:block}
+.fs,.fi{width:100%;padding:11px 14px;margin-bottom:1rem;background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;font-family:inherit;color:var(--text);outline:none;appearance:none;-webkit-appearance:none}
+.fs{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6860' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
+.btn-login{width:100%;padding:12px;background:var(--text);color:var(--bg);border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:600;font-family:inherit;cursor:pointer}
+.btn-login:active{opacity:.8}
+.lerr{font-size:12px;color:var(--red);text-align:center;margin-top:.75rem;min-height:18px}
+#dashboard{display:none;padding-bottom:2rem}
+.dh{padding:1rem 1.25rem .875rem;background:var(--surface);border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.dg{font-size:11px;color:var(--text3)}.dn{font-size:17px;font-weight:600}
+.bs{font-size:12px;color:var(--text2);background:var(--surface2);border:.5px solid var(--border);border-radius:var(--radius-sm);padding:6px 14px;cursor:pointer;font-family:inherit}
+.tabs{display:flex;background:var(--surface);border-bottom:.5px solid var(--border);padding:0 1.25rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{font-size:13px;font-weight:500;color:var(--text3);padding:.75rem 0;margin-right:1.25rem;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.tab.active{color:var(--text);border-bottom-color:var(--text)}
+.tc{display:none}.tc.active{display:block}
+.card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem;margin-bottom:1rem}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.mc{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem}
+.ml{font-size:11px;color:var(--text3);margin-bottom:5px}.mv{font-size:22px;font-weight:600;line-height:1}.ms{font-size:11px;color:var(--text3);margin-top:4px}
+.ph{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.pt{font-size:13px;font-weight:600}.pp{font-size:18px;font-weight:600}
+.ptrack{height:7px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-bottom:8px}
+.pfill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.pamt{display:flex;justify-content:space-between;font-size:11px;color:var(--text3)}
+.sl{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:.875rem}
+.proj-badge{display:inline-flex;align-items:center;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.pb-red{background:rgba(220,38,38,.12);color:#dc2626}.pb-amber{background:rgba(217,119,6,.12);color:#d97706}.pb-green{background:rgba(22,163,74,.12);color:#16a34a}
+.sep{margin-top:12px;padding-top:10px;border-top:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sep-lbl{font-size:11px;color:var(--text3)}
+.bt{width:100%;border-collapse:collapse}
+.bt th{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:0 0 8px;text-align:right}
+.bt th:first-child{text-align:left}
+.bt td{font-size:12px;color:var(--text2);padding:7px 0;border-top:.5px solid var(--border);text-align:right;vertical-align:middle}
+.bt td:first-child{text-align:left;color:var(--text);font-weight:500;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:6px}
+.bp{font-size:10px;font-weight:600;padding:2px 5px;border-radius:4px}
+.bp-red{background:rgba(220,38,38,.1);color:#dc2626}.bp-amber{background:rgba(217,119,6,.1);color:#d97706}.bp-green{background:rgba(22,163,74,.1);color:#16a34a}.bp-n{background:var(--surface2);color:var(--text3)}
+.dr{display:flex;align-items:center;gap:10px;margin-bottom:10px}.dr:last-child{margin-bottom:0}
+.df{font-size:11px;color:var(--text3);width:52px;flex-shrink:0}
+.dtrack{flex:1;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.dfill{height:100%;border-radius:3px;background:var(--green)}
+.dright{text-align:right;flex-shrink:0;width:88px}
+.dm{font-size:12px;font-weight:500}.dc{font-size:10px;color:var(--text3)}
+.rl{display:flex;flex-direction:column;gap:8px}
+.ri{display:flex;align-items:center;gap:12px;padding:.875rem 1rem;background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius)}
+.ri.me{border-color:var(--border2);border-width:1.5px}
+.rp{font-size:13px;font-weight:600;color:var(--text3);width:22px;text-align:center;flex-shrink:0}
+.ri.me .rp{color:var(--text)}.rinfo{flex:1;min-width:0}
+.rn{font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px}
+.rsub{font-size:11px;color:var(--text3);margin-top:2px}
+.rright{text-align:right;flex-shrink:0}.rpv{font-size:15px;font-weight:600}
+.yb{font-size:9px;font-weight:700;background:var(--blue);color:#fff;border-radius:4px;padding:2px 6px}
+/* Takis tab */
+.tak-header{background:linear-gradient(135deg,#1a1917 0%,#3d1a0a 100%);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;color:#fff}
+.tak-brand{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin-bottom:4px}
+.tak-title{font-size:18px;font-weight:600;margin-bottom:1rem}
+.tak-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tak-stat{background:rgba(255,255,255,.1);border-radius:var(--radius-sm);padding:.75rem}
+.tak-stat-label{font-size:10px;opacity:.7;margin-bottom:4px}
+.tak-stat-val{font-size:20px;font-weight:600}
+.tak-stat-sub{font-size:10px;opacity:.6;margin-top:2px}
+
+.od-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:.875rem 1.25rem;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.od-card.hoy{border-color:var(--blue);border-width:1.5px}
+.od-fecha{font-size:11px;color:var(--text3)}
+.od-dia{font-size:14px;font-weight:600;color:var(--text);margin:3px 0}
+.od-peso{font-size:10px;color:var(--text3)}
+.od-obj{font-size:18px;font-weight:600;color:var(--text);text-align:right}
+.od-obj-lbl{font-size:10px;color:var(--text3);text-align:right}
+.hoy-badge{font-size:9px;font-weight:700;background:var(--blue);color:#fff;border-radius:4px;padding:2px 6px;margin-left:6px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="login-screen">
+  <div class="login-eyebrow">Canal Horizontal · CBBA</div>
+  <div class="login-heading">Mi Panel de Ventas</div>
+  <div class="login-sub">Abril 2026</div>
+  <div class="login-card">
+    <label class="fl" for="sv">Vendedor</label>
+    <select class="fs" id="sv"><option value="">Selecciona tu nombre…</option></select>
+    <label class="fl" for="ip">Contraseña</label>
+    <input class="fi" type="password" id="ip" placeholder="••••••••" autocomplete="current-password"/>
+    <button class="btn-login" onclick="doLogin()">Ingresar</button>
+    <div class="lerr" id="le"></div>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="dh">
+    <div><div class="dg">Hola,</div><div class="dn" id="dn">—</div></div>
+    <button class="bs" onclick="doLogout()">Salir</button>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('r',this)">Resumen</div>
+    <div class="tab" onclick="showTab('m',this)">Marcas</div>
+    <div class="tab" onclick="showTab('t',this)">Takis</div>
+    <div class="tab" onclick="showTab('o',this)">Obj. día</div>
+    <div class="tab" onclick="showTab('d',this)">Por día</div>
+    <div class="tab" onclick="showTab('k',this)">Ranking</div>
+  </div>
+
+  <!-- RESUMEN -->
+  <div id="tab-r" class="tc active">
+    <div class="mg">
+      <div class="mc"><div class="ml">Venta del mes</div><div class="mv" id="m1">—</div><div class="ms">Bs.</div></div>
+      <div class="mc"><div class="ml">Cobertura</div><div class="mv" id="m2">—</div><div class="ms" id="m2s">clientes únicos</div></div>
+      <div class="mc"><div class="ml">Último día</div><div class="mv" id="m3">—</div><div class="ms">Bs.</div></div>
+      <div class="mc"><div class="ml">Posición equipo</div><div class="mv" id="m4">—</div><div class="ms">de 15 vendedores</div></div>
+    </div>
+    <div class="card">
+      <div class="ph"><span class="pt">Avance vs meta ventas</span><span class="pp" id="pp1">0%</span></div>
+      <div class="ptrack"><div class="pfill" id="pf1" style="width:0%"></div></div>
+      <div class="pamt"><span id="pa1">Bs. 0</span><span id="pa2">Meta: Bs. 0</span></div>
+      <div class="sep"><span class="sep-lbl">Proyección cierre de mes</span><span id="pb" class="proj-badge pb-red">—</span></div>
+    </div>
+    <div class="card" id="cobcard">
+      <div class="ph"><span class="pt">Avance vs objetivo cobertura</span><span class="pp" id="pp2">0%</span></div>
+      <div class="ptrack"><div class="pfill" id="pf2" style="width:0%"></div></div>
+      <div class="pamt"><span id="ca1">0 clientes</span><span id="ca2">Obj: 0</span></div>
+    </div>
+    <div class="sl">Últimos 7 días</div>
+    <div class="card" style="padding:1.1rem 1rem"><div style="position:relative;width:100%;height:170px"><canvas id="ch" role="img" aria-label="Ventas recientes"></canvas></div></div>
+  </div>
+
+  <!-- MARCAS -->
+  <div id="tab-m" class="tc">
+    <div class="sl">Ventas por marca — Abril 2026</div>
+    <div class="card" style="padding:.75rem 1rem;overflow-x:auto">
+      <table class="bt"><thead><tr><th style="text-align:left">Marca</th><th>Avance</th><th>Ppto</th><th>%</th><th>Proy.</th></tr></thead>
+      <tbody id="mb"></tbody></table>
+    </div>
+  </div>
+
+  <!-- TAKIS -->
+  <div id="tab-t" class="tc">
+    <div class="tak-header">
+      <div class="tak-brand">Cobertura</div>
+      <div class="tak-title">TAKIS — Abril 2026</div>
+      <div class="tak-stats">
+        <div class="tak-stat">
+          <div class="tak-stat-label">Clientes atendidos</div>
+          <div class="tak-stat-val" id="tak-av">—</div>
+          <div class="tak-stat-sub" id="tak-obj-sub">de — objetivo</div>
+        </div>
+        <div class="tak-stat">
+          <div class="tak-stat-label">% Avance</div>
+          <div class="tak-stat-val" id="tak-pct">—</div>
+          <div class="tak-stat-sub">cobertura</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="tak-prog-card">
+      <div class="ph"><span class="pt">Avance vs objetivo</span><span class="pp" id="tak-pp">0%</span></div>
+      <div class="ptrack"><div class="pfill" id="tak-pf" style="width:0%"></div></div>
+      <div class="pamt"><span id="tak-a1">0 clientes</span><span id="tak-a2">Obj: 0</span></div>
+      <div class="sep"><span class="sep-lbl">Proyección cierre de mes</span><span id="tak-proj" class="proj-badge pb-red">—</span></div>
+    </div>
+    <div class="card">
+      <div class="ph" style="margin-bottom:6px"><span class="pt">Venta Takis del mes</span></div>
+      <div style="font-size:22px;font-weight:600" id="tak-venta">—</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">Bs.</div>
+    </div>
+  </div>
+
+  <!-- OBJETIVO DEL DÍA -->
+  <div id="tab-o" class="tc">
+    <div class="sl">Objetivo del día — días restantes</div>
+    <div class="card" style="padding:.875rem 1.25rem;margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Falta para meta</div>
+          <div style="font-size:22px;font-weight:600" id="od-falta">—</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">Bs.</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Días hábiles restantes</div>
+          <div style="font-size:22px;font-weight:600" id="od-dias">—</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">días</div>
+        </div>
+      </div>
+    </div>
+    <div id="od-list"></div>
+  </div>
+
+
+  <!-- POR DÍA -->
+  <div id="tab-d" class="tc">
+    <div class="sl">Ventas por día — Abril 2026</div>
+    <div class="card" id="dc"></div>
+  </div>
+
+  <!-- RANKING -->
+  <div id="tab-k" class="tc">
+    <div class="sl">Ranking por % de cumplimiento</div>
+    <div class="rl" id="rl"></div>
+  </div>
+</div>
+</div>
+
+<script>
+const D={"ADRIANA CRUZ ESPINOZA (CBBA)": {"nombre_corto": "Adriana Cruz", "password": "neo22", "presupuesto": 75300, "venta_mes": 16660.95, "proyeccion_mes": 30381.73, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 131, "cobertura_objetivo": 160, "takis_avance": 87, "takis_objetivo": 131, "ventas_por_dia": {"2026-05-02": 652.4, "2026-05-04": 291.5, "2026-05-06": 1712.4, "2026-05-07": 3438.17, "2026-05-08": 708, "2026-05-09": 2576.88, "2026-05-11": 927.02, "2026-05-12": 1337, "2026-05-13": 1573.08, "2026-05-14": 2328.5, "2026-05-15": 558, "2026-05-16": 558}, "clientes_por_dia": {"2026-05-02": 7, "2026-05-04": 4, "2026-05-06": 17, "2026-05-07": 22, "2026-05-08": 8, "2026-05-09": 20, "2026-05-11": 9, "2026-05-12": 17, "2026-05-13": 18, "2026-05-14": 14, "2026-05-15": 6, "2026-05-16": 6}, "marcas": [{"marca": "TAKIS", "venta": 9408.73, "presupuesto": 45500, "proyeccion": 17157.1}, {"marca": "CICLON", "venta": 4422.24, "presupuesto": 20500, "proyeccion": 8064.08}, {"marca": "ACTIVADE", "venta": 1988, "presupuesto": 7500, "proyeccion": 3625.18}, {"marca": "SUEROX", "venta": 487.9, "presupuesto": 0, "proyeccion": 889.7}, {"marca": "LIFE TEA", "venta": 175, "presupuesto": 300, "proyeccion": 319.12}, {"marca": "EVEREADY", "venta": 97, "presupuesto": 0, "proyeccion": 176.88}, {"marca": "ENERGIZER", "venta": 82.08, "presupuesto": 1000, "proyeccion": 149.68}, {"marca": "AGUA LUVIA", "venta": 0, "presupuesto": 200, "proyeccion": 0}, {"marca": "IGNITE", "venta": 0, "presupuesto": 200, "proyeccion": 0}, {"marca": "REVLON", "venta": 0, "presupuesto": 100, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 58639.05, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2052.37, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 6743.49, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 3518.34, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 6743.49, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 6450.3, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 3811.54, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2052.37, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 6743.49, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 3518.34, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 6743.49, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 6450.3, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 3811.54, "peso": 0.13}]}, "CAMILO ROBLES ZAMBRANA (CBBA)": {"nombre_corto": "Camilo Robles", "password": "argo67", "presupuesto": 91900, "venta_mes": 16337.48, "proyeccion_mes": 29791.88, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 116, "cobertura_objetivo": 180, "takis_avance": 63, "takis_objetivo": 143, "ventas_por_dia": {"2026-05-02": 412, "2026-05-04": 638.04, "2026-05-06": 1898.9, "2026-05-07": 1959.82, "2026-05-08": 2038.68, "2026-05-09": 2026.4, "2026-05-11": 1875.64, "2026-05-13": 1780.0, "2026-05-14": 1888.0, "2026-05-15": 686.0, "2026-05-16": 1134.0}, "clientes_por_dia": {"2026-05-02": 6, "2026-05-04": 7, "2026-05-06": 25, "2026-05-07": 15, "2026-05-08": 12, "2026-05-09": 15, "2026-05-11": 6, "2026-05-13": 13, "2026-05-14": 14, "2026-05-15": 8, "2026-05-16": 9}, "marcas": [{"marca": "TAKIS", "venta": 7170.0, "presupuesto": 49400, "proyeccion": 13074.71}, {"marca": "CICLON", "venta": 4699.6, "presupuesto": 27000, "proyeccion": 8569.86}, {"marca": "ACTIVADE", "venta": 3270.0, "presupuesto": 11300, "proyeccion": 5962.94}, {"marca": "SUEROX", "venta": 585.48, "presupuesto": 0, "proyeccion": 1067.64}, {"marca": "LIFE TEA", "venta": 364.4, "presupuesto": 1300, "proyeccion": 664.49}, {"marca": "ENERGIZER", "venta": 176, "presupuesto": 1100, "proyeccion": 320.94}, {"marca": "TABASCO", "venta": 72.0, "presupuesto": 400, "proyeccion": 131.29}, {"marca": "AGUA LUVIA", "venta": 0, "presupuesto": 1100, "proyeccion": 0}, {"marca": "IGNITE", "venta": 0, "presupuesto": 200, "proyeccion": 0}, {"marca": "REVLON", "venta": 0, "presupuesto": 100, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 75562.52, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2644.69, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 8689.69, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 4533.75, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 8689.69, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 8311.88, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 4911.56, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2644.69, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 8689.69, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 4533.75, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 8689.69, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 8311.88, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 4911.56, "peso": 0.13}]}, "DIEGO SAINZ VEDIA (CBBA )": {"nombre_corto": "Diego Sainz", "password": "terreno33", "presupuesto": 85100, "venta_mes": 18247.37, "proyeccion_mes": 33274.62, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 108, "cobertura_objetivo": 220, "takis_avance": 73, "takis_objetivo": 180, "ventas_por_dia": {"2026-05-02": 1106.2, "2026-05-04": 424, "2026-05-06": 536, "2026-05-07": 5125.93, "2026-05-08": 3687.94, "2026-05-09": 710, "2026-05-11": 156, "2026-05-12": 2084.2, "2026-05-14": 1501.4, "2026-05-15": 2088.8, "2026-05-16": 826.9}, "clientes_por_dia": {"2026-05-02": 10, "2026-05-04": 3, "2026-05-06": 6, "2026-05-07": 31, "2026-05-08": 23, "2026-05-09": 7, "2026-05-11": 2, "2026-05-12": 7, "2026-05-14": 10, "2026-05-15": 18, "2026-05-16": 8}, "marcas": [{"marca": "TAKIS", "venta": 8198.5, "presupuesto": 44300, "proyeccion": 14950.21}, {"marca": "CICLON", "venta": 5182.22, "presupuesto": 18500, "proyeccion": 9449.93}, {"marca": "ACTIVADE", "venta": 2088, "presupuesto": 9900, "proyeccion": 3807.53}, {"marca": "ENERGIZER", "venta": 1930.97, "presupuesto": 11100, "proyeccion": 3521.18}, {"marca": "LIFE TEA", "venta": 450, "presupuesto": 300, "proyeccion": 820.59}, {"marca": "TABASCO", "venta": 230.4, "presupuesto": 200, "proyeccion": 420.14}, {"marca": "SUEROX", "venta": 167.28, "presupuesto": 0, "proyeccion": 305.04}, {"marca": "AGUA LUVIA", "venta": 0, "presupuesto": 400, "proyeccion": 0}, {"marca": "EVEREADY", "venta": 0, "presupuesto": 100, "proyeccion": 0}, {"marca": "IGNITE", "venta": 0, "presupuesto": 200, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 66852.63, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2339.84, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 7688.05, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 4011.16, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 7688.05, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 7353.79, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 4345.42, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2339.84, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 7688.05, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 4011.16, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 7688.05, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 7353.79, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 4345.42, "peso": 0.13}]}, "GUADALUPE VELASQUEZ PEREZ": {"nombre_corto": "Guadalupe Velásquez", "password": "cerro42", "presupuesto": 317000, "venta_mes": 119417.77, "proyeccion_mes": 217761.82, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 20, "cobertura_objetivo": 100, "takis_avance": 8, "takis_objetivo": 0, "ventas_por_dia": {"2026-05-02": 13860, "2026-05-04": 582.74, "2026-05-06": 3600, "2026-05-07": 26775.19, "2026-05-08": 5500.0, "2026-05-09": 11275.2, "2026-05-12": 15932, "2026-05-14": 11275.2, "2026-05-15": 6749.44, "2026-05-16": 23868.0}, "clientes_por_dia": {"2026-05-02": 1, "2026-05-04": 5, "2026-05-06": 3, "2026-05-07": 2, "2026-05-08": 2, "2026-05-09": 1, "2026-05-12": 2, "2026-05-14": 1, "2026-05-15": 2, "2026-05-16": 1}, "marcas": [{"marca": "TAKIS", "venta": 58019.59, "presupuesto": 258200, "proyeccion": 105800.43}, {"marca": "CICLON", "venta": 34718, "presupuesto": 46600, "proyeccion": 63309.29}, {"marca": "ENERGIZER", "venta": 20057.45, "presupuesto": 1400, "proyeccion": 36575.35}, {"marca": "ACTIVADE", "venta": 4847.99, "presupuesto": 8100, "proyeccion": 8840.45}, {"marca": "AGUA LUVIA", "venta": 1752, "presupuesto": 2100, "proyeccion": 3194.82}, {"marca": "SUEROX", "venta": 13.94, "presupuesto": 0, "proyeccion": 25.42}, {"marca": "ALOVI", "venta": 8.8, "presupuesto": 0, "proyeccion": 16.05}, {"marca": "IGNITE", "venta": 0, "presupuesto": 200, "proyeccion": 0}, {"marca": "LIFE TEA", "venta": 0, "presupuesto": 200, "proyeccion": 0}, {"marca": "TABASCO", "venta": 0, "presupuesto": 200, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 197582.23, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 6915.38, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 22721.96, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 11854.93, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 22721.96, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 21734.05, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 12842.84, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 6915.38, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 22721.96, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 11854.93, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 22721.96, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 21734.05, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 12842.84, "peso": 0.13}]}, "HENRY DOMINGUEZ MARTINEZ": {"nombre_corto": "Henry Domínguez", "password": "roca87", "presupuesto": 82500, "venta_mes": 19880.66, "proyeccion_mes": 36252.97, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 116, "cobertura_objetivo": 190, "takis_avance": 75, "takis_objetivo": 149, "ventas_por_dia": {"2026-05-02": 1207, "2026-05-04": 480.12, "2026-05-06": 1834.62, "2026-05-07": 5621.72, "2026-05-08": 2224, "2026-05-09": 1674.2, "2026-05-11": 741.4, "2026-05-12": 755.04, "2026-05-13": 1083, "2026-05-14": 1709.96, "2026-05-15": 1672, "2026-05-16": 877.6}, "clientes_por_dia": {"2026-05-02": 10, "2026-05-04": 6, "2026-05-06": 13, "2026-05-07": 32, "2026-05-08": 12, "2026-05-09": 12, "2026-05-11": 6, "2026-05-12": 6, "2026-05-13": 12, "2026-05-14": 16, "2026-05-15": 11, "2026-05-16": 7}, "marcas": [{"marca": "TAKIS", "venta": 9608, "presupuesto": 34800, "proyeccion": 17520.47}, {"marca": "CICLON", "venta": 5963.02, "presupuesto": 20400, "proyeccion": 10873.74}, {"marca": "ACTIVADE", "venta": 1950, "presupuesto": 25100, "proyeccion": 3555.88}, {"marca": "SUEROX", "venta": 864.28, "presupuesto": 0, "proyeccion": 1576.04}, {"marca": "TABASCO", "venta": 799.68, "presupuesto": 200, "proyeccion": 1458.24}, {"marca": "LIFE TEA", "venta": 425, "presupuesto": 700, "proyeccion": 775.0}, {"marca": "ENERGIZER", "venta": 200.64, "presupuesto": 900, "proyeccion": 365.87}, {"marca": "AGUA LUVIA", "venta": 70.04, "presupuesto": 100, "proyeccion": 127.72}, {"marca": "IGNITE", "venta": 0, "presupuesto": 200, "proyeccion": 0}, {"marca": "REVLON", "venta": 0, "presupuesto": 100, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 62619.34, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2191.68, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 7201.22, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 3757.16, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 7201.22, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 6888.13, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 4070.26, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2191.68, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 7201.22, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 3757.16, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 7201.22, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 6888.13, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 4070.26, "peso": 0.13}]}, "IGNACIO AMARU QUISBERT": {"nombre_corto": "Ignacio Amaru", "password": "pradera61", "presupuesto": 863500, "venta_mes": 243106.31, "proyeccion_mes": 443311.51, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 103, "cobertura_objetivo": 170, "takis_avance": 3, "takis_objetivo": 0, "ventas_por_dia": {"2026-05-02": 3451.38, "2026-05-06": 23370.38, "2026-05-07": 28424.27, "2026-05-08": 10248, "2026-05-09": 10109.28, "2026-05-11": 1405.36, "2026-05-12": 10292.22, "2026-05-13": 1991.7, "2026-05-14": 5111.1, "2026-05-15": 5698.74, "2026-05-16": 143003.88}, "clientes_por_dia": {"2026-05-02": 6, "2026-05-06": 27, "2026-05-07": 23, "2026-05-08": 12, "2026-05-09": 8, "2026-05-11": 4, "2026-05-12": 9, "2026-05-13": 4, "2026-05-14": 6, "2026-05-15": 8, "2026-05-16": 9}, "marcas": [{"marca": "STP", "venta": 233393.39, "presupuesto": 849300, "proyeccion": 425599.71}, {"marca": "CALIFORNIA", "venta": 4383, "presupuesto": 4800, "proyeccion": 7992.53}, {"marca": "ARMOR-ALL", "venta": 2068.88, "presupuesto": 1000, "proyeccion": 3772.66}, {"marca": "KIT", "venta": 1845, "presupuesto": 1200, "proyeccion": 3364.41}, {"marca": "ENERGIZER", "venta": 993.04, "presupuesto": 6700, "proyeccion": 1810.84}, {"marca": "TAKIS", "venta": 156, "presupuesto": 100, "proyeccion": 284.47}, {"marca": "REFRESH YOUR CAR", "venta": 143, "presupuesto": 300, "proyeccion": 260.76}, {"marca": "CICLON", "venta": 124, "presupuesto": 100, "proyeccion": 226.12}], "dias_restantes": 12, "falta_meta": 620393.69, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 21713.78, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 71345.27, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 37223.62, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 71345.27, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 68243.31, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 40325.59, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 21713.78, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 71345.27, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 37223.62, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 71345.27, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 68243.31, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 40325.59, "peso": 0.13}]}, "IVAN OSINAGA MERIDA": {"nombre_corto": "Ivan Osinaga", "password": "desk53", "presupuesto": 92800, "venta_mes": 20087.6, "proyeccion_mes": 36630.33, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 138, "cobertura_objetivo": 220, "takis_avance": 85, "takis_objetivo": 173, "ventas_por_dia": {"2026-05-02": 910, "2026-05-04": 1818.56, "2026-05-06": 1449.22, "2026-05-07": 1185.2, "2026-05-08": 5199.76, "2026-05-09": 1073.0, "2026-05-11": 1368.02, "2026-05-12": 1445.02, "2026-05-13": 1608.02, "2026-05-14": 1167.6, "2026-05-15": 2248.4, "2026-05-16": 614.8}, "clientes_por_dia": {"2026-05-02": 9, "2026-05-04": 11, "2026-05-06": 17, "2026-05-07": 12, "2026-05-08": 23, "2026-05-09": 12, "2026-05-11": 14, "2026-05-12": 15, "2026-05-13": 17, "2026-05-14": 11, "2026-05-15": 17, "2026-05-16": 5}, "marcas": [{"marca": "TAKIS", "venta": 9586.5, "presupuesto": 53800, "proyeccion": 17481.26}, {"marca": "CICLON", "venta": 5375.68, "presupuesto": 25300, "proyeccion": 9802.71}, {"marca": "ACTIVADE", "venta": 3896, "presupuesto": 10700, "proyeccion": 7104.47}, {"marca": "SUEROX", "venta": 460.02, "presupuesto": 0, "proyeccion": 838.86}, {"marca": "LIFE TEA", "venta": 352.6, "presupuesto": 900, "proyeccion": 642.98}, {"marca": "AGUA LUVIA", "venta": 280, "presupuesto": 500, "proyeccion": 510.59}, {"marca": "TABASCO", "venta": 92.8, "presupuesto": 500, "proyeccion": 169.22}, {"marca": "ENERGIZER", "venta": 44, "presupuesto": 800, "proyeccion": 80.24}, {"marca": "IGNITE", "venta": 0, "presupuesto": 200, "proyeccion": 0}, {"marca": "REVLON", "venta": 0, "presupuesto": 100, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 72712.4, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2544.93, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 8361.93, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 4362.74, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 8361.93, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 7998.36, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 4726.31, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2544.93, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 8361.93, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 4362.74, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 8361.93, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 7998.36, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 4726.31, "peso": 0.13}]}, "IVIAN KATHYA ADRIAN OLIVERA  (CBBA)": {"nombre_corto": "Ivian Adrian", "password": "frame87", "presupuesto": 88000, "venta_mes": 18290.86, "proyeccion_mes": 33353.92, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 127, "cobertura_objetivo": 170, "takis_avance": 91, "takis_objetivo": 135, "ventas_por_dia": {"2026-05-02": 116.04, "2026-05-04": 724.16, "2026-05-07": 4510.1, "2026-05-08": 1410.04, "2026-05-09": 984.0, "2026-05-11": 1827.02, "2026-05-12": 1852.4, "2026-05-13": 2635.42, "2026-05-14": 2396.4, "2026-05-15": 1021.28, "2026-05-16": 814}, "clientes_por_dia": {"2026-05-02": 2, "2026-05-04": 8, "2026-05-07": 26, "2026-05-08": 14, "2026-05-09": 10, "2026-05-11": 16, "2026-05-12": 18, "2026-05-13": 22, "2026-05-14": 17, "2026-05-15": 11, "2026-05-16": 6}, "marcas": [{"marca": "TAKIS", "venta": 9587.0, "presupuesto": 42800, "proyeccion": 17482.18}, {"marca": "CICLON", "venta": 5300.92, "presupuesto": 20700, "proyeccion": 9666.38}, {"marca": "ACTIVADE", "venta": 2346, "presupuesto": 10000, "proyeccion": 4278.0}, {"marca": "ENERGIZER", "venta": 331.2, "presupuesto": 11400, "proyeccion": 603.95}, {"marca": "SUEROX", "venta": 292.74, "presupuesto": 0, "proyeccion": 533.82}, {"marca": "EVEREADY", "venta": 228, "presupuesto": 0, "proyeccion": 415.76}, {"marca": "AGUA LUVIA", "venta": 105, "presupuesto": 700, "proyeccion": 191.47}, {"marca": "LIFE TEA", "venta": 100, "presupuesto": 1000, "proyeccion": 182.35}, {"marca": "IGNITE", "venta": 0, "presupuesto": 200, "proyeccion": 0}, {"marca": "REVLON", "venta": 0, "presupuesto": 100, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 69709.14, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2439.82, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 8016.55, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 4182.55, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 8016.55, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 7668.01, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 4531.09, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2439.82, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 8016.55, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 4182.55, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 8016.55, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 7668.01, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 4531.09, "peso": 0.13}]}, "MARCOS ALVAREZ SANDOVAL CBBA": {"nombre_corto": "Marcos Álvarez", "password": "boost43", "presupuesto": 98000, "venta_mes": 33784.98, "proyeccion_mes": 61607.9, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 171, "cobertura_objetivo": 220, "takis_avance": 85, "takis_objetivo": 180, "ventas_por_dia": {"2026-05-02": 2400.1, "2026-05-04": 901.8, "2026-05-05": 298.68, "2026-05-06": 1401.32, "2026-05-07": 5635.18, "2026-05-08": 1349.52, "2026-05-09": 10930.6, "2026-05-11": 102, "2026-05-12": 1683.82, "2026-05-13": 2580.84, "2026-05-14": 3635.08, "2026-05-15": 1021.04, "2026-05-16": 1845}, "clientes_por_dia": {"2026-05-02": 21, "2026-05-04": 9, "2026-05-05": 1, "2026-05-06": 12, "2026-05-07": 35, "2026-05-08": 12, "2026-05-09": 20, "2026-05-11": 2, "2026-05-12": 19, "2026-05-13": 22, "2026-05-14": 17, "2026-05-15": 12, "2026-05-16": 14}, "marcas": [{"marca": "CICLON", "venta": 12922.72, "presupuesto": 26700, "proyeccion": 23564.96}, {"marca": "TAKIS", "venta": 8742.5, "presupuesto": 45800, "proyeccion": 15942.21}, {"marca": "ACTIVADE", "venta": 5004, "presupuesto": 11500, "proyeccion": 9124.94}, {"marca": "ENERGIZER", "venta": 4887.08, "presupuesto": 9600, "proyeccion": 8911.73}, {"marca": "LIFE TEA", "venta": 957.6, "presupuesto": 2300, "proyeccion": 1746.21}, {"marca": "TABASCO", "venta": 622.88, "presupuesto": 800, "proyeccion": 1135.84}, {"marca": "AGUA LUVIA", "venta": 245.04, "presupuesto": 700, "proyeccion": 446.84}, {"marca": "SUEROX", "venta": 167.28, "presupuesto": 0, "proyeccion": 305.04}, {"marca": "REVLON", "venta": 130.68, "presupuesto": 100, "proyeccion": 238.3}, {"marca": "EVEREADY", "venta": 105.2, "presupuesto": 300, "proyeccion": 191.84}], "dias_restantes": 12, "falta_meta": 64215.02, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2247.53, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 7384.73, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 3852.9, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 7384.73, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 7063.65, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 4173.98, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2247.53, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 7384.73, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 3852.9, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 7384.73, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 7063.65, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 4173.98, "peso": 0.13}]}, "MAYRA MEDRANO (CBBA)": {"nombre_corto": "Mayra Medrano", "password": "pencil77", "presupuesto": 99000, "venta_mes": 36697.58, "proyeccion_mes": 66919.12, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 182, "cobertura_objetivo": 220, "takis_avance": 101, "takis_objetivo": 170, "ventas_por_dia": {"2026-05-02": 851.82, "2026-05-04": 511.82, "2026-05-05": 298.68, "2026-05-06": 2256.91, "2026-05-07": 13719.51, "2026-05-08": 4872.68, "2026-05-09": 1248.4, "2026-05-11": 767.2, "2026-05-12": 1441, "2026-05-13": 2143.42, "2026-05-14": 3429.56, "2026-05-15": 4336.58, "2026-05-16": 820}, "clientes_por_dia": {"2026-05-02": 6, "2026-05-04": 5, "2026-05-05": 1, "2026-05-06": 18, "2026-05-07": 49, "2026-05-08": 16, "2026-05-09": 12, "2026-05-11": 6, "2026-05-12": 19, "2026-05-13": 22, "2026-05-14": 29, "2026-05-15": 16, "2026-05-16": 8}, "marcas": [{"marca": "TAKIS", "venta": 12855.2, "presupuesto": 51100, "proyeccion": 23441.84}, {"marca": "CICLON", "venta": 11336.99, "presupuesto": 24800, "proyeccion": 20673.33}, {"marca": "ENERGIZER", "venta": 8421.17, "presupuesto": 11500, "proyeccion": 15356.25}, {"marca": "ACTIVADE", "venta": 2262, "presupuesto": 9800, "proyeccion": 4124.82}, {"marca": "SUEROX", "venta": 1129.14, "presupuesto": 0, "proyeccion": 2059.02}, {"marca": "LIFE TEA", "venta": 500, "presupuesto": 300, "proyeccion": 911.76}, {"marca": "REVLON", "venta": 130.68, "presupuesto": 200, "proyeccion": 238.3}, {"marca": "TABASCO", "venta": 62.4, "presupuesto": 600, "proyeccion": 113.79}, {"marca": "AGUA LUVIA", "venta": 0, "presupuesto": 200, "proyeccion": 0}, {"marca": "EVEREADY", "venta": 0, "presupuesto": 300, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 62302.42, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2180.58, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 7164.78, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 3738.15, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 7164.78, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 6853.27, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 4049.66, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2180.58, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 7164.78, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 3738.15, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 7164.78, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 6853.27, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 4049.66, "peso": 0.13}]}, "NICOLAS VALDIVIA BARRIENTOS (CBBA)": {"nombre_corto": "Nicolás Valdivia", "password": "rest98", "presupuesto": 85200, "venta_mes": 19137.7, "proyeccion_mes": 34898.16, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 140, "cobertura_objetivo": 190, "takis_avance": 96, "takis_objetivo": 144, "ventas_por_dia": {"2026-05-02": 1204, "2026-05-04": 3211.72, "2026-05-06": 2885.92, "2026-05-07": 2751.06, "2026-05-08": 1737.9, "2026-05-09": 1230.9, "2026-05-11": 658.88, "2026-05-12": 740.32, "2026-05-13": 1604.0, "2026-05-14": 1117, "2026-05-15": 1385, "2026-05-16": 611}, "clientes_por_dia": {"2026-05-02": 8, "2026-05-04": 25, "2026-05-06": 28, "2026-05-07": 20, "2026-05-08": 13, "2026-05-09": 13, "2026-05-11": 6, "2026-05-12": 8, "2026-05-13": 16, "2026-05-14": 14, "2026-05-15": 11, "2026-05-16": 8}, "marcas": [{"marca": "TAKIS", "venta": 10139.5, "presupuesto": 51800, "proyeccion": 18489.68}, {"marca": "CICLON", "venta": 4043.2, "presupuesto": 20100, "proyeccion": 7372.89}, {"marca": "ACTIVADE", "venta": 2580, "presupuesto": 8900, "proyeccion": 4704.71}, {"marca": "SUEROX", "venta": 822.46, "presupuesto": 0, "proyeccion": 1499.78}, {"marca": "ENERGIZER", "venta": 783.78, "presupuesto": 2200, "proyeccion": 1429.25}, {"marca": "LIFE TEA", "venta": 423.6, "presupuesto": 1000, "proyeccion": 772.45}, {"marca": "TABASCO", "venta": 222.56, "presupuesto": 300, "proyeccion": 405.84}, {"marca": "AGUA LUVIA", "venta": 122.6, "presupuesto": 300, "proyeccion": 223.56}, {"marca": "EVEREADY", "venta": 0, "presupuesto": 300, "proyeccion": 0}, {"marca": "IGNITE", "venta": 0, "presupuesto": 200, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 66062.3, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2312.18, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 7597.16, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 3963.74, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 7597.16, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 7266.85, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 4294.05, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2312.18, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 7597.16, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 3963.74, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 7597.16, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 7266.85, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 4294.05, "peso": 0.13}]}, "PABLO AVILA LIMACHE CBBA": {"nombre_corto": "Pablo Avila", "password": "ciro21", "presupuesto": 92300, "venta_mes": 18145.14, "proyeccion_mes": 33088.2, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 123, "cobertura_objetivo": 220, "takis_avance": 81, "takis_objetivo": 177, "ventas_por_dia": {"2026-05-02": 2398, "2026-05-04": 1467.86, "2026-05-06": 1976.4, "2026-05-07": 2751.14, "2026-05-08": 1769.1, "2026-05-09": 1359.14, "2026-05-11": 508, "2026-05-12": 1521, "2026-05-13": 1379, "2026-05-14": 578, "2026-05-15": 1819.5, "2026-05-16": 618}, "clientes_por_dia": {"2026-05-02": 18, "2026-05-04": 12, "2026-05-06": 11, "2026-05-07": 25, "2026-05-08": 11, "2026-05-09": 10, "2026-05-11": 3, "2026-05-12": 14, "2026-05-13": 10, "2026-05-14": 9, "2026-05-15": 11, "2026-05-16": 10}, "marcas": [{"marca": "TAKIS", "venta": 8489.5, "presupuesto": 57000, "proyeccion": 15480.85}, {"marca": "CICLON", "venta": 5660.34, "presupuesto": 20700, "proyeccion": 10321.8}, {"marca": "ACTIVADE", "venta": 3318, "presupuesto": 12500, "proyeccion": 6050.47}, {"marca": "SUEROX", "venta": 627.3, "presupuesto": 0, "proyeccion": 1143.9}, {"marca": "LIFE TEA", "venta": 50, "presupuesto": 400, "proyeccion": 91.18}, {"marca": "AGUA LUVIA", "venta": 0, "presupuesto": 100, "proyeccion": 0}, {"marca": "ENERGIZER", "venta": 0, "presupuesto": 1200, "proyeccion": 0}, {"marca": "IGNITE", "venta": 0, "presupuesto": 200, "proyeccion": 0}, {"marca": "REVLON", "venta": 0, "presupuesto": 100, "proyeccion": 0}, {"marca": "TABASCO", "venta": 0, "presupuesto": 100, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 74154.86, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2595.42, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 8527.81, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 4449.29, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 8527.81, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 8157.03, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 4820.07, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2595.42, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 8527.81, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 4449.29, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 8527.81, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 8157.03, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 4820.07, "peso": 0.13}]}, "ROBERTO OQUENDO VALENCIA ( CBBA)": {"nombre_corto": "Roberto Oquendo", "password": "mises55", "presupuesto": 81700, "venta_mes": 17487.19, "proyeccion_mes": 31888.41, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 117, "cobertura_objetivo": 210, "takis_avance": 71, "takis_objetivo": 159, "ventas_por_dia": {"2026-05-02": 224, "2026-05-04": 2473.62, "2026-05-06": 1829.88, "2026-05-07": 808, "2026-05-08": 1920.04, "2026-05-09": 1690.02, "2026-05-11": 1754.84, "2026-05-12": 1040.4, "2026-05-13": 1041.45, "2026-05-14": 1528.32, "2026-05-15": 1472.62, "2026-05-16": 1704.0}, "clientes_por_dia": {"2026-05-02": 2, "2026-05-04": 14, "2026-05-06": 22, "2026-05-07": 9, "2026-05-08": 14, "2026-05-09": 6, "2026-05-11": 12, "2026-05-12": 10, "2026-05-13": 8, "2026-05-14": 13, "2026-05-15": 8, "2026-05-16": 13}, "marcas": [{"marca": "TAKIS", "venta": 8655.0, "presupuesto": 44600, "proyeccion": 15782.65}, {"marca": "CICLON", "venta": 4369.96, "presupuesto": 23800, "proyeccion": 7968.75}, {"marca": "ACTIVADE", "venta": 2922.0, "presupuesto": 9000, "proyeccion": 5328.35}, {"marca": "LIFE TEA", "venta": 730.2, "presupuesto": 1000, "proyeccion": 1331.54}, {"marca": "ENERGIZER", "venta": 538.31, "presupuesto": 2300, "proyeccion": 981.62}, {"marca": "SUEROX", "venta": 250.92, "presupuesto": 0, "proyeccion": 457.56}, {"marca": "TABASCO", "venta": 20.8, "presupuesto": 200, "proyeccion": 37.93}, {"marca": "AGUA LUVIA", "venta": 0, "presupuesto": 300, "proyeccion": 0}, {"marca": "EVEREADY", "venta": 0, "presupuesto": 200, "proyeccion": 0}, {"marca": "IGNITE", "venta": 0, "presupuesto": 200, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 64212.81, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2247.45, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 7384.47, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 3852.77, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 7384.47, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 7063.41, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 4173.83, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2247.45, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 7384.47, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 3852.77, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 7384.47, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 7063.41, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 4173.83, "peso": 0.13}]}, "TOMAS EZEQUIEL TORRICOS (CBBA)": {"nombre_corto": "Tomás Torricos", "password": "rothbart36", "presupuesto": 82100, "venta_mes": 15417.38, "proyeccion_mes": 28114.05, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 110, "cobertura_objetivo": 210, "takis_avance": 75, "takis_objetivo": 154, "ventas_por_dia": {"2026-05-02": 402, "2026-05-04": 881.52, "2026-05-06": 3388.34, "2026-05-07": 1750.26, "2026-05-08": 1699.54, "2026-05-09": 1585.02, "2026-05-11": 425.64, "2026-05-12": 1522.2, "2026-05-13": 1337.9, "2026-05-14": 826.4, "2026-05-15": 1118.2, "2026-05-16": 480.36}, "clientes_por_dia": {"2026-05-02": 5, "2026-05-04": 6, "2026-05-06": 29, "2026-05-07": 10, "2026-05-08": 13, "2026-05-09": 13, "2026-05-11": 4, "2026-05-12": 11, "2026-05-13": 12, "2026-05-14": 6, "2026-05-15": 14, "2026-05-16": 6}, "marcas": [{"marca": "TAKIS", "venta": 8498.5, "presupuesto": 51800, "proyeccion": 15497.26}, {"marca": "ACTIVADE", "venta": 3010, "presupuesto": 7700, "proyeccion": 5488.82}, {"marca": "CICLON", "venta": 2866.58, "presupuesto": 20100, "proyeccion": 5227.29}, {"marca": "SUEROX", "venta": 697.0, "presupuesto": 0, "proyeccion": 1271.0}, {"marca": "ENERGIZER", "venta": 217.9, "presupuesto": 1100, "proyeccion": 397.35}, {"marca": "TABASCO", "venta": 102.4, "presupuesto": 300, "proyeccion": 186.73}, {"marca": "LIFE TEA", "venta": 25, "presupuesto": 100, "proyeccion": 45.59}, {"marca": "AGUA LUVIA", "venta": 0, "presupuesto": 100, "proyeccion": 0}, {"marca": "EVEREADY", "venta": 0, "presupuesto": 600, "proyeccion": 0}, {"marca": "IGNITE", "venta": 0, "presupuesto": 200, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 66682.62, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2333.89, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 7668.5, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 4000.96, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 7668.5, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 7335.09, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 4334.37, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2333.89, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 7668.5, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 4000.96, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 7668.5, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 7335.09, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 4334.37, "peso": 0.13}]}, "WALTER RONALD FERRUFINO CASTRO (CBBA)": {"nombre_corto": "Walter Ferrufino", "password": "tree34", "presupuesto": 78800, "venta_mes": 18686.62, "proyeccion_mes": 34075.6, "dia_reporte": 17, "dia_cierre": 31, "cobertura_avance": 118, "cobertura_objetivo": 0, "takis_avance": 73, "takis_objetivo": 0, "ventas_por_dia": {"2026-05-04": 788.12, "2026-05-06": 986, "2026-05-07": 4897.34, "2026-05-08": 2492.6, "2026-05-09": 3856.8, "2026-05-11": 523.2, "2026-05-12": 1383, "2026-05-13": 1069, "2026-05-14": 882.76, "2026-05-15": 827.8, "2026-05-16": 980}, "clientes_por_dia": {"2026-05-04": 7, "2026-05-06": 9, "2026-05-07": 41, "2026-05-08": 17, "2026-05-09": 13, "2026-05-11": 5, "2026-05-12": 14, "2026-05-13": 10, "2026-05-14": 9, "2026-05-15": 6, "2026-05-16": 6}, "marcas": [{"marca": "TAKIS", "venta": 11218.2, "presupuesto": 55000, "proyeccion": 20456.72}, {"marca": "CICLON", "venta": 4864.6, "presupuesto": 15500, "proyeccion": 8870.74}, {"marca": "ACTIVADE", "venta": 1854, "presupuesto": 4500, "proyeccion": 3380.82}, {"marca": "LIFE TEA", "venta": 347.3, "presupuesto": 500, "proyeccion": 633.31}, {"marca": "TABASCO", "venta": 180.96, "presupuesto": 100, "proyeccion": 329.99}, {"marca": "AGUA LUVIA", "venta": 105.08, "presupuesto": 0, "proyeccion": 191.62}, {"marca": "ENERGIZER", "venta": 60.72, "presupuesto": 2800, "proyeccion": 110.72}, {"marca": "SUEROX", "venta": 55.76, "presupuesto": 0, "proyeccion": 101.68}, {"marca": "IGNITE", "venta": 0, "presupuesto": 200, "proyeccion": 0}, {"marca": "REVLON", "venta": 0, "presupuesto": 200, "proyeccion": 0}], "dias_restantes": 12, "falta_meta": 60113.38, "objetivo_dia": [{"fecha": "2026-05-18", "dia_semana": "Lunes", "objetivo": 2103.97, "peso": 0.07}, {"fecha": "2026-05-19", "dia_semana": "Martes", "objetivo": 6913.04, "peso": 0.23}, {"fecha": "2026-05-20", "dia_semana": "Miércoles", "objetivo": 3606.8, "peso": 0.12}, {"fecha": "2026-05-21", "dia_semana": "Jueves", "objetivo": 6913.04, "peso": 0.23}, {"fecha": "2026-05-22", "dia_semana": "Viernes", "objetivo": 6612.47, "peso": 0.22}, {"fecha": "2026-05-23", "dia_semana": "Sábado", "objetivo": 3907.37, "peso": 0.13}, {"fecha": "2026-05-25", "dia_semana": "Lunes", "objetivo": 2103.97, "peso": 0.07}, {"fecha": "2026-05-26", "dia_semana": "Martes", "objetivo": 6913.04, "peso": 0.23}, {"fecha": "2026-05-27", "dia_semana": "Miércoles", "objetivo": 3606.8, "peso": 0.12}, {"fecha": "2026-05-28", "dia_semana": "Jueves", "objetivo": 6913.04, "peso": 0.23}, {"fecha": "2026-05-29", "dia_semana": "Viernes", "objetivo": 6612.47, "peso": 0.22}, {"fecha": "2026-05-30", "dia_semana": "Sábado", "objetivo": 3907.37, "peso": 0.13}]}};
+
+let cur=null,ci=null;
+function fmt(n){return Math.round(n).toLocaleString('es-BO')}
+function pc(p){return p>=90?'green':p>=61?'amber':'red'}
+function bpc(p){return p>=90?'bp-green':p>=61?'bp-amber':p>0?'bp-red':'bp-n'}
+function pbc(p){return p>=90?'pb-green':p>=61?'pb-amber':'pb-red'}
+
+const sv=document.getElementById('sv');
+Object.keys(D).sort((a,b)=>D[a].nombre_corto.localeCompare(D[b].nombre_corto)).forEach(k=>{
+  const o=document.createElement('option');o.value=k;o.textContent=D[k].nombre_corto;sv.appendChild(o);
+});
+
+function doLogin(){
+  const k=sv.value,p=document.getElementById('ip').value,e=document.getElementById('le');
+  if(!k){e.textContent='Selecciona tu nombre';return}
+  if(D[k].password!==p){e.textContent='Contraseña incorrecta';return}
+  e.textContent='';cur=k;build(k);
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+}
+function doLogout(){
+  cur=null;
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('ip').value='';sv.value='';
+  if(ci){ci.destroy();ci=null;}
+  showTab('r',document.querySelectorAll('.tab')[0]);
+}
+function showTab(n,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+n).classList.add('active');
+}
+function build(key){
+  const d=D[key];
+  document.getElementById('dn').textContent=d.nombre_corto;
+  const dias=Object.keys(d.ventas_por_dia).sort();
+  const ult=dias[dias.length-1]||'';
+
+  // Cobertura metric
+  if(d.cobertura_objetivo>0){
+    const cp=d.cobertura_avance/d.cobertura_objetivo*100;
+    document.getElementById('m2').textContent=d.cobertura_avance;
+    document.getElementById('m2').style.color='var(--'+pc(cp)+')';
+    document.getElementById('m2s').textContent='de '+d.cobertura_objetivo+' objetivo';
+  } else {
+    document.getElementById('m2').textContent=d.cobertura_avance;
+    document.getElementById('m2').style.color='';
+    document.getElementById('m2s').textContent='clientes únicos';
+  }
+  document.getElementById('m1').textContent=fmt(d.venta_mes);
+  document.getElementById('m3').textContent=fmt(d.ventas_por_dia[ult]||0);
+
+  // Ranking by %
+  const rk=Object.keys(D).sort((a,b)=>(D[b].venta_mes/D[b].presupuesto)-(D[a].venta_mes/D[a].presupuesto));
+  document.getElementById('m4').textContent='#'+(rk.indexOf(key)+1);
+
+  // Ventas progress
+  const pv=d.presupuesto>0?(d.venta_mes/d.presupuesto*100):0;
+  const cv=pc(pv);
+  document.getElementById('pp1').textContent=pv.toFixed(1)+'%';
+  document.getElementById('pp1').style.color='var(--'+cv+')';
+  document.getElementById('pf1').style.width=Math.min(pv,100)+'%';
+  document.getElementById('pf1').style.background='var(--'+cv+')';
+  document.getElementById('pa1').textContent='Bs. '+fmt(d.venta_mes);
+  document.getElementById('pa2').textContent='Meta: Bs. '+fmt(d.presupuesto);
+
+  // Projection badge
+  const pp=d.presupuesto>0?(d.proyeccion_mes/d.presupuesto*100):0;
+  const pb=document.getElementById('pb');
+  pb.textContent='Proyección: '+pp.toFixed(1)+'% · Bs. '+fmt(d.proyeccion_mes);
+  pb.className='proj-badge '+pbc(pp);
+
+  // Cobertura progress
+  const cc=document.getElementById('cobcard');
+  if(d.cobertura_objetivo>0){
+    cc.style.display='block';
+    const cpv=d.cobertura_avance/d.cobertura_objetivo*100;
+    const ccol=pc(cpv);
+    document.getElementById('pp2').textContent=cpv.toFixed(1)+'%';
+    document.getElementById('pp2').style.color='var(--'+ccol+')';
+    document.getElementById('pf2').style.width=Math.min(cpv,100)+'%';
+    document.getElementById('pf2').style.background='var(--'+ccol+')';
+    document.getElementById('ca1').textContent=d.cobertura_avance+' clientes';
+    document.getElementById('ca2').textContent='Obj: '+d.cobertura_objetivo;
+  } else { cc.style.display='none'; }
+
+  // Chart
+  const ul=dias.slice(-7);
+  if(ci)ci.destroy();
+  ci=new Chart(document.getElementById('ch'),{
+    type:'bar',
+    data:{labels:ul.map(f=>f.slice(8)+'/04'),datasets:[{data:ul.map(f=>Math.round(d.ventas_por_dia[f])),backgroundColor:'#2563eb',borderRadius:5,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11},color:'#9e9b94'},grid:{display:false},border:{display:false}},y:{ticks:{font:{size:10},color:'#9e9b94',callback:v=>'Bs.'+fmt(v)},grid:{color:'rgba(128,128,128,.08)'},border:{display:false}}}}
+  });
+
+  // Brands
+  document.getElementById('mb').innerHTML=d.marcas.map(m=>{
+    const p=m.presupuesto>0?(m.venta/m.presupuesto*100):null;
+    const ps=p!==null?p.toFixed(1)+'%':'—';
+    return `<tr><td title="${m.marca}">${m.marca}</td><td>Bs.${fmt(m.venta)}</td><td>${m.presupuesto>0?'Bs.'+fmt(m.presupuesto):'—'}</td><td><span class="bp ${p!==null?bpc(p):'bp-n'}">${ps}</span></td><td>Bs.${fmt(m.proyeccion)}</td></tr>`;
+  }).join('');
+
+  // Takis tab
+  const tak_m=d.marcas.find(m=>m.marca==='TAKIS');
+  const tak_venta=tak_m?tak_m.venta:0;
+  document.getElementById('tak-venta').textContent=fmt(tak_venta);
+  document.getElementById('tak-av').textContent=d.takis_avance;
+  if(d.takis_objetivo>0){
+    const tp=d.takis_avance/d.takis_objetivo*100;
+    document.getElementById('tak-obj-sub').textContent='de '+d.takis_objetivo+' objetivo';
+    document.getElementById('tak-pct').textContent=tp.toFixed(1)+'%';
+    document.getElementById('tak-prog-card').style.display='block';
+    document.getElementById('tak-pp').textContent=tp.toFixed(1)+'%';
+    document.getElementById('tak-pp').style.color='var(--'+pc(tp)+')';
+    document.getElementById('tak-pf').style.width=Math.min(tp,100)+'%';
+    document.getElementById('tak-pf').style.background='var(--'+pc(tp)+')';
+    document.getElementById('tak-a1').textContent=d.takis_avance+' clientes';
+    document.getElementById('tak-a2').textContent='Obj: '+d.takis_objetivo;
+    const tproj=d.takis_avance>0?Math.round((d.takis_avance/d.dia_reporte)*d.dia_cierre):0;
+    const tprojpct=d.takis_objetivo>0?(tproj/d.takis_objetivo*100):0;
+    const tpb=document.getElementById('tak-proj');
+    tpb.textContent='Proyección: '+tprojpct.toFixed(1)+'% · '+tproj+' clientes';
+    tpb.className='proj-badge '+pbc(tprojpct);
+  } else {
+    document.getElementById('tak-obj-sub').textContent='clientes únicos';
+    document.getElementById('tak-pct').textContent='—';
+    document.getElementById('tak-prog-card').style.display='none';
+  }
+
+  buildObjetivoDia(key);
+
+  // Days
+  const mx=Math.max(...dias.map(f=>d.ventas_por_dia[f]));
+  document.getElementById('dc').innerHTML=dias.map(f=>{
+    const pt=f.slice(5).split('-');const lbl=pt[1]+'/'+pt[0];
+    const v=d.ventas_por_dia[f];const cl=d.clientes_por_dia[f]||0;
+    return `<div class="dr"><span class="df">${lbl}</span><div class="dtrack"><div class="dfill" style="width:${(v/mx*100).toFixed(1)}%"></div></div><div class="dright"><div class="dm">Bs. ${fmt(v)}</div><div class="dc">${cl} clientes</div></div></div>`;
+  }).join('');
+
+  // Ranking
+  const med=['🥇','🥈','🥉'];
+  document.getElementById('rl').innerHTML=rk.map((k,i)=>{
+    const isMe=k===key;
+    const pV=D[k].presupuesto>0?(D[k].venta_mes/D[k].presupuesto*100):0;
+    const pos=i<3?`<span style="font-size:18px">${med[i]}</span>`:`<span class="rp">${i+1}</span>`;
+    return `<div class="ri${isMe?' me':''}">
+      ${pos}
+      <div class="rinfo"><div class="rn">${D[k].nombre_corto}${isMe?'<span class="yb">TÚ</span>':''}"</div><div class="rsub">cumplimiento de meta</div></div>
+      <div class="rright"><div class="rpv" style="color:var(--${pc(pV)})">${pV.toFixed(1)}%</div></div>
+    </div>`;
+  }).join('');
+}
+
+function buildObjetivoDia(key) {
+  const d = D[key];
+  document.getElementById('od-falta').textContent = fmt(d.falta_meta);
+  document.getElementById('od-dias').textContent = d.dias_restantes;
+
+  // Get today's date string YYYY-MM-DD
+  const hoy = new Date();
+  const hoyStr = hoy.getFullYear() + '-' +
+    String(hoy.getMonth()+1).padStart(2,'0') + '-' +
+    String(hoy.getDate()).padStart(2,'0');
+
+  if (d.falta_meta <= 0) {
+    document.getElementById('od-list').innerHTML =
+      '<div class="card" style="text-align:center;padding:1.5rem;color:var(--green);font-weight:600">🎉 ¡Meta alcanzada!</div>';
+    return;
+  }
+
+  document.getElementById('od-list').innerHTML = d.objetivo_dia.map(o => {
+    const isHoy = o.fecha === hoyStr;
+    const pct = Math.round(o.peso * 100);
+    return `<div class="od-card${isHoy ? ' hoy' : ''}">
+      <div>
+        <div class="od-fecha">${o.fecha.slice(8)}/${o.fecha.slice(5,7)}</div>
+        <div class="od-dia">${o.dia_semana}${isHoy ? '<span class="hoy-badge">HOY</span>' : ''}"</div>
+        <div class="od-peso">${pct}% del peso semanal</div>
+      </div>
+      <div>
+        <div class="od-obj">Bs. ${fmt(o.objetivo)}</div>
+        <div class="od-obj-lbl">objetivo del día</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('ip').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+</script>
+</body>
+</html>
